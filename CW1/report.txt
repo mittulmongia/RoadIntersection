@@ -1,3 +1,0 @@
-The Average Waiting Time per car is: 0.25
-The total Emissions are: 3.75
-The total crossed vehicles are: 3
