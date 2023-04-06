@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
-
+//Interface declaration for Subject (Observer Pattern)
 public interface Subject {
     List<Observer> observers = new ArrayList<>();
 
