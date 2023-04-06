@@ -1,3 +1,4 @@
 public interface Observer {
-    void update();
+// Interface declaration for Observer pattern
+	void update();
 }
