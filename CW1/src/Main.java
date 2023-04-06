@@ -128,10 +128,9 @@ public class Main{
 		
 		GUIModel model = new GUIModel();
 		GUIView guiView =new GUIView(model);
-		
 		GUIController controller = new GUIController(model, guiView, new Helper());
 		
-		
+		//Support for concurrent execution of Models,vehicles and Phases
 		GUIModel guimodelThread = new GUIModel(); 
 		guimodelThread.start();
 		Vehicles vehiclesThread = new Vehicles(); 
