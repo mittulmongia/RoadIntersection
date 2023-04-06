@@ -6,6 +6,7 @@ public class Phases  extends Thread {
 	private LinkedList<Vehicles> cars;
 	private LinkedList<Vehicles> crossedCars;
 	
+	
 	public void run()
 	{ // code to be run as a thread
 		System.out.println("Started....Phases");
