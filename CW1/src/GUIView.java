@@ -22,6 +22,7 @@ public class GUIView extends JFrame implements Observer {
 	/**
 	 * 
 	 */
+	//added GUIModel reference in the view
 	public GUIModel guiModel;
 	private static final long serialVersionUID = 1L;
 	private Font font = new Font("Courier", Font.BOLD, 20);
@@ -112,6 +113,7 @@ public class GUIView extends JFrame implements Observer {
 		basePanel.add(emissionPanel);		
 		this.add(basePanel);
 		this.guiModel = model;
+		//Register myself to the model subject
 		guiModel.registerObserver(this);
 		System.out.println("View successfully registered to the model");
 		
@@ -331,6 +333,7 @@ public class GUIView extends JFrame implements Observer {
 		return cDField;
 	}
 
+	//added implementation of the Update for observer
 	@Override
 	public void update() {
 		System.out.println("Success-----The View has been Updated");
