@@ -127,7 +127,9 @@ public class Main{
 	public static void main(String Args[]) {
 		
 		GUIModel model = new GUIModel();
+		//Code changed to Passing Model in the view for pattern implementation
 		GUIView guiView =new GUIView(model);
+		
 		GUIController controller = new GUIController(model, guiView, new Helper());
 		
 		//Support for concurrent execution of Models,vehicles and Phases
