@@ -10,7 +10,7 @@ public class Vehicles extends Thread {
 	private String segment;
 	
 	public void run()
-	{ // code to be run as a thread
+	{ // Added code for Threads
 		System.out.println("Started....Vehicle");
 	
 	}

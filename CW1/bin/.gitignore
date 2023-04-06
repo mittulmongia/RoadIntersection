@@ -1,3 +1,4 @@
+/ConcreteStrategyA.class
 /DuplicateIDException.class
 /GUI$1.class
 /GUI.class
@@ -17,11 +18,10 @@
 /JunitTests$VehicleClassClassTest.class
 /JunitTests.class
 /Main.class
+/Observer.class
 /PhaseException.class
 /Phases.class
 /ReportFile.class
-/Vehicles.class
-/Observer.class
-/Subject.class
 /Strategy.class
-/ConcreteStrategyA.class
+/Subject.class
+/Vehicles.class
