@@ -138,7 +138,7 @@ public class JunitTests {
 		@Test
 		@DisplayName("Test for the Total Vehicles Should return Total Emissions.")
 		@Order(10)
-		@Disabled
+		
 		public void ControlIntersections_ShouldReturnTotalEmission()
 		{	
 			// the test will be enabled when the method fixes the exception being caused after calling
@@ -147,24 +147,13 @@ public class JunitTests {
 			// Total cars in CSV file is 0
 			LinkedList<Phases> phaseList = gui.readPhasesFile("phases.csv");
 			
-			float flTotalEmission = Main.controlIntersections(phaseList,1000);
-					
+			LinkedList<Float> flTotalEmission = Main.controlIntersections(phaseList,1000);
+			Assertions.assertNotNull(flTotalEmission.getFirst());
+			Assertions.assertNotNull(flTotalEmission.getLast());
+		
 		}
 		
-		@Test
-		@DisplayName("Test for the Total Emissions Should not return null.")
-		@Order(11)
-		@Disabled
-		public void ControlIntersections_ShouldNotReturnNull()
-		{	
-			GUI gui = new GUI();
-			// Total cars in CSV file is 0
-			LinkedList<Phases> phaseList = gui.readPhasesFile("phases.csv");
-			
-			float flTotalEmission = Main.controlIntersections(phaseList,1000);
-			
-			Assertions.assertNotNull(flTotalEmission);
-		}
+		
 		
 		@Test
 		@DisplayName("Test for the Creating Vehicle Should create Vehicle object.")
@@ -175,7 +164,8 @@ public class JunitTests {
 			 GUI gui = new GUI();
 			 List<String> strList;
 			 strList = CreateTestDataVehicle();
-			 Object car = gui.createVehicle(strList);
+			 LinkedList<Phases> phaseList = null;
+			 Object car = gui.createVehicle(strList,phaseList);
 			  Assertions.assertTrue(car instanceof Vehicles);
 			
 		}
@@ -187,9 +177,10 @@ public class JunitTests {
 		public void CreateVehicle_ShouldMatchSuppliedVehicleObject()
 		{	
 			 GUI gui = new GUI();
+			 LinkedList<Phases> phaseList = null;
 			 List<String> strList;
 			 strList = CreateTestDataVehicle();
-			 Vehicles car = gui.createVehicle(strList);
+			 Vehicles car = gui.createVehicle(strList,phaseList);
 			String strActualCrossingDirection = car.getCrossingDirection();
 			String strActualCrossingStatus = car.getCrossingStatus();
 			
@@ -210,8 +201,9 @@ public class JunitTests {
 		{	
 			 GUI gui = new GUI();
 			 List<String> strList;
+			 LinkedList<Phases> phaseList = null;
 			 strList = CreateTestDataVehicle();
-			 Vehicles car = gui.createVehicle(strList);
+			 Vehicles car = gui.createVehicle(strList,phaseList);
 			 
 			 Assertions.assertNotNull(car);
 			
@@ -395,11 +387,12 @@ public class JunitTests {
 		{	
 			 LinkedList<Phases> listOfPhases;
 			 GUI gui = new GUI();
+			 LinkedList<Phases> phaseList = null;
 			 listOfPhases = gui.readPhasesFile("phases.csv");
 			 
 			 List<String> strListVehicle;
 			 strListVehicle = CreateTestDataVehicle();
-			 Vehicles car = gui.createVehicle(strListVehicle);
+			 Vehicles car = gui.createVehicle(strListVehicle,phaseList);
 			 car.setCrossingDirection("straight");
 			 car.setSegment("1");
 			 gui.findPhase(car,listOfPhases);
@@ -413,12 +406,13 @@ public class JunitTests {
 		public void FindPhaseShouldReturnTrue_WhenVehicleIsAddedToList()
 		{	
 			 LinkedList<Phases> listOfPhases;
+			 LinkedList<Phases> phaseList = null;
 			 GUI gui = new GUI();
 			 listOfPhases = gui.readPhasesFile("phases.csv");
 			 
 			 List<String> strListVehicle;
 			 strListVehicle = CreateTestDataVehicle();
-			 Vehicles car = gui.createVehicle(strListVehicle);
+			 Vehicles car = gui.createVehicle(strListVehicle,phaseList);
 			 car.setCrossingDirection("straight");
 			 car.setSegment("1");
 			 gui.findPhase(car,listOfPhases);
@@ -445,8 +439,9 @@ public class JunitTests {
 		{	
 			 GUI gui = new GUI();
 			 List<String> strList;
+			 LinkedList<Phases> phaseList = null;
 			 strList = CreateTestDataVehicle();
-			 Vehicles car = gui.createVehicle(strList);
+			 Vehicles car = gui.createVehicle(strList,phaseList);
 			 Assertions.assertThrows(NullPointerException.class, ()-> gui.findPhase(car,null));
 		}
 
