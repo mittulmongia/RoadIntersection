@@ -13,17 +13,17 @@ public class GUIModel extends Thread implements Subject{
 	private String[] phaseColNames = {"Phase name",	
 	"Phase Timer"};
 
-private String[] segmentStatColNames = {"Segment",	
+	private String[] segmentStatColNames = {"Segment",	
 	"No. of Vehicles Waiting", 
 	"Waiting Time", 
 	"Waiting Length", 
 	"Avg. Cross Time"};
 
-private DefaultTableModel vehicleModel;
-private DefaultTableModel phaseModel;
-private DefaultTableModel statsModel;
+	private DefaultTableModel vehicleModel;
+	private DefaultTableModel phaseModel;
+	private DefaultTableModel statsModel;
 
-private String[] vehicleColNames = {
+   private String[] vehicleColNames = {
 		"plate number",	
 		"type",	
 		"crossing time (s)",
@@ -39,14 +39,12 @@ private String[] vehicleColNames = {
 		statsModel = createTableModel(segmentStatColNames);
 		
 	}
-	
-
+	// code to be run as a thread
 	public void run()
-	{ // code to be run as a thread
+	{ 
 		System.out.println("Started....");
 				
-	}
-
+	}	
 	public synchronized DefaultTableModel createTableModel(String[] columns) {
 		DefaultTableModel model = new DefaultTableModel();
 		model.setColumnIdentifiers(columns);
