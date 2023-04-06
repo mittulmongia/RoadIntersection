@@ -20,9 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class GUIController  {
-	// list of observers
-		private List<Observer> registeredObservers = new 
-		LinkedList<Observer>();
+	
 	private GUIModel model;
 	private GUIView view;
 	private Helper helper;
@@ -45,7 +43,9 @@ public class GUIController  {
 	private float totalEmissions = 0;
 	String[] phaseSegment = {"3","1","4","2","1","3","2","4"};
 	private LinkedList<Phases> phaseList;
-	
+	// list of observers
+	private List<Observer> registeredObservers = new 
+	LinkedList<Observer>();
 	
 	//GUI Elements 
 	private JPanel tablesPanel;
@@ -104,28 +104,6 @@ public class GUIController  {
 		view.setEmissionField(Float.toString(totalEmissions));
 		view.addVehicleButtonListener(new AddVehicleListener());
 			
-	}
-	class AddVehicleListener implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			
-			new Thread() { 
-				public void run() {
-				// time-consuming code to run here
-					doTheTask();
-					// Update the user interface components here
-					SwingUtilities.invokeLater(new Runnable() 
-					{ 
-						public void run() {
-					        
-					                                          }
-					});
-					
-				}
-				}.start();
-			// TODO Auto-generated method stub
-			        }		 
 	}
 	
 	public void doTheTask()
@@ -220,8 +198,6 @@ public class GUIController  {
 			this.model.notifyObservers();
 	}
 
-	
-	
 	private JScrollPane addVehiclePane(LinkedList<Phases> phaseList, Helper helper, GUIModel model, GUIView view) {
 		
 		while(!Main.blnDoWork) { 
@@ -422,9 +398,26 @@ public class GUIController  {
 		
 	}
 	
+	class AddVehicleListener implements ActionListener {
 
-
-
-	
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			new Thread() { 
+				public void run() {
+				// time-consuming code to run here
+					doTheTask();
+					// Update the user interface components here
+					SwingUtilities.invokeLater(new Runnable() 
+					{ 
+						public void run() {
+					        
+					                                          }
+					});
+					
+				}
+				}.start();
+			        }		 
+	}
 
 }
