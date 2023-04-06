@@ -19,54 +19,30 @@ public class Vehicles extends Thread {
 		return plateNumber; 
 	}
 	 
-	public synchronized void setPlateNumber (String plateNumber) {
-		this.plateNumber = plateNumber;
-	}
 	
 	public String getVehicleType() { 
 		return vehicleType; 
 	}
 	
+	public synchronized void setPlateNumber (String plateNumber) {
+		this.plateNumber = plateNumber;
+	}
+	
 	public synchronized void setVehicleType (String vehicleType) {
 		this.vehicleType = vehicleType;
 	}
-	
-	public float getCrossingTime() {
-		return crossingTime;
-	}
-	
 	public synchronized void setCrossingTime(float crossingTime) {
 		this.crossingTime = crossingTime;
 	}
-	
-	public String getCrossingDirection() { 
-		return crossingDirection; 
-	}
-	
 	public synchronized void setCrossingDirection (String crossingDirection) {
 		this.crossingDirection = crossingDirection;
 	}
-	
-	public String getCrossingStatus(){
-		return crossingStatus;
-	}
-	
 	public synchronized void setCrossingStatus(String crossingStatus) {
 		this.crossingStatus = crossingStatus;
 	}
-	
-	public float getVehicleLength() {
-		return vehicleLength; 
-	}
-	
 	public synchronized void setVehicleLength(float vehicleLength) {
 		this.vehicleLength = vehicleLength;
 	}
-	
-	public float getVehicleEmission() {
-		return vehicleEmission;
-	}
-	
 	public synchronized void setVehicleEmission(float vehicleEmission) {
 		this.vehicleEmission = vehicleEmission;
 	}
@@ -74,16 +50,40 @@ public class Vehicles extends Thread {
 	public synchronized void setSegment(String segmentNumber) {
 		this.segment = segmentNumber;
 	}
+public synchronized float calculateEmissions(float waitingTime) {
+		
+		return this.getVehicleEmission() * (waitingTime/60);
+	}
+	
+	
+	public float getCrossingTime() {
+		return crossingTime;
+	}
+	
+	
+	public String getCrossingDirection() { 
+		return crossingDirection; 
+	}
+	
+		
+	public String getCrossingStatus(){
+		return crossingStatus;
+	}
+
+	public float getVehicleLength() {
+		return vehicleLength; 
+	}
+	
+
+	
+	public float getVehicleEmission() {
+		return vehicleEmission;
+	}
+	
 	
 	public String getSegment() {
 		return segment;
 	}
 	
-	public synchronized float calculateEmissions(float waitingTime) {
-		
-		return this.getVehicleEmission() * (waitingTime/60);
-	}
-	
-
 }
 
