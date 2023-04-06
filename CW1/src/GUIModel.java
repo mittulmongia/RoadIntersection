@@ -45,32 +45,7 @@ public class GUIModel extends Thread implements Subject{
 		System.out.println("Started....");
 				
 	}	
-	public synchronized DefaultTableModel createTableModel(String[] columns) {
-		DefaultTableModel model = new DefaultTableModel();
-		model.setColumnIdentifiers(columns);
-		
-		return model;
-		
-	}
-	
-	public synchronized void updateModel(DefaultTableModel  model, String[] rowData) {
-		model.addRow(rowData);
-		
-	}
-	
-	public DefaultTableModel getVehicleModel() {
-		return vehicleModel;
-	}
-	
-	public DefaultTableModel getPhaseModel(){
-		return phaseModel;
-	}
-	
-	public DefaultTableModel getStatsModel() {
-		return statsModel;
-	}
-
-
+	//Concrete implementation of the Subject for observer pattern
 	@Override
 	public void registerObserver(Observer observer) {
 		
@@ -97,4 +72,28 @@ public class GUIModel extends Thread implements Subject{
 	}
 	
 
+	public synchronized DefaultTableModel createTableModel(String[] columns) {
+		DefaultTableModel model = new DefaultTableModel();
+		model.setColumnIdentifiers(columns);
+		
+		return model;
+		
+	}
+	
+	public synchronized void updateModel(DefaultTableModel  model, String[] rowData) {
+		model.addRow(rowData);
+		
+	}
+	
+	public DefaultTableModel getVehicleModel() {
+		return vehicleModel;
+	}
+	
+	public DefaultTableModel getPhaseModel(){
+		return phaseModel;
+	}
+	
+	public DefaultTableModel getStatsModel() {
+		return statsModel;
+	}
 }
