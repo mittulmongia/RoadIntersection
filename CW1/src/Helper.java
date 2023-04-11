@@ -89,7 +89,7 @@ public class Helper {
 		}else if(!((direction.equals("straight")) || (direction.equals("left")) || (direction.equals("right")))){
 			throw new InaccurateDataException("Your direction should either be straight, left or right");
 		}else if (checkDuplicate(plateNumber, phaseList)) {
-			//throw new DuplicateIDException(plateNumber + ": This vehicle has a duplicate car plate number.");
+			throw new DuplicateIDException(plateNumber + ": This vehicle has a duplicate car plate number.");
 		}
 	}
 	
