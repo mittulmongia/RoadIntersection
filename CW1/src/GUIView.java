@@ -22,7 +22,6 @@ public class GUIView extends JFrame implements Observer {
 	/**
 	 * 
 	 */
-	//added GUIModel reference in the view
 	public GUIModel guiModel;
 	private static final long serialVersionUID = 1L;
 	private Font font = new Font("Courier", Font.BOLD, 20);
@@ -77,6 +76,10 @@ public class GUIView extends JFrame implements Observer {
 	//Total Emission Display
 	private JPanel emissionPanel;
 	private JLabel emissionLabel;;
+	//
+	private JButton startButton;
+	
+	
 	public GUIView(GUIModel model) {
 		this.setTitle("Road Intersection");
 		this.setVisible(true);
@@ -110,10 +113,11 @@ public class GUIView extends JFrame implements Observer {
 		basePanel.add(emptyLabel2);
 		//Emission Panel
 		emissionPanel = addEmissionsPanel();
-		basePanel.add(emissionPanel);		
+		basePanel.add(emissionPanel);	
+		startButton = new JButton("Start Simulation");
+		basePanel.add(startButton);
 		this.add(basePanel);
 		this.guiModel = model;
-		//Register myself to the model subject
 		guiModel.registerObserver(this);
 		System.out.println("View successfully registered to the model");
 		
@@ -262,6 +266,10 @@ public class GUIView extends JFrame implements Observer {
 		addVehicleButton.addActionListener(listener);
 	}
 	
+	public void startButtonListener(ActionListener listener) {
+		startButton.addActionListener(listener);
+	}
+	
 	public JScrollPane getStatsPane() {
 		return statsPane;
 	}
@@ -333,7 +341,6 @@ public class GUIView extends JFrame implements Observer {
 		return cDField;
 	}
 
-	//added implementation of the Update for observer
 	@Override
 	public void update() {
 		System.out.println("Success-----The View has been Updated");

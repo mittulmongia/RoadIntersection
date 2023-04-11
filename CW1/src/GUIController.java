@@ -1,9 +1,13 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -20,32 +24,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class GUIController  {
-	
+	// list of observers
+	private List<Observer> registeredObservers = new LinkedList<Observer>();
+	private ReportFile file;
 	private GUIModel model;
 	private GUIView view;
 	private Helper helper;
-	private int s1counter = 0;
-	private float s1WaitingTime = 0;
-	private float s1CrossTime = 0;
-	private float s1WaitingLength = 0;
-	private int s2counter = 0;
-	private float s2WaitingTime = 0;
-	private float s2CrossTime = 0;
-	private float s2WaitingLength = 0;
-	private int s3counter = 0;
-	private float s3WaitingTime = 0;
-	private float s3CrossTime = 0;
-	private float s3WaitingLength = 0;
-	private int s4counter = 0;
-	private float s4WaitingTime = 0;
-	private float s4CrossTime = 0;
-	private float s4WaitingLength = 0;
-	private float totalEmissions = 0;
 	String[] phaseSegment = {"3","1","4","2","1","3","2","4"};
 	private LinkedList<Phases> phaseList;
-	// list of observers
-	private List<Observer> registeredObservers = new 
-	LinkedList<Observer>();
+
 	
 	//GUI Elements 
 	private JPanel tablesPanel;
@@ -81,7 +68,8 @@ public class GUIController  {
 		this.view = _view;
 		this.helper = _helper;
 		this.phaseList = helper.readPhasesFile("phases.csv");
-		
+		 //Segment Table Variables
+		this.file = ReportFile.getInstance();
 		//GUI Elements;
 		tablesPanel = view.getTablesPanel();
 		if(tablesPanel != null) {Main.blnDoWork = true;}else{Main.blnDoWork = false;};
@@ -101,12 +89,73 @@ public class GUIController  {
 		vLField = view.getvLField();
 		sField = view.getsField();
 		
-		view.setEmissionField(Float.toString(totalEmissions));
 		view.addVehicleButtonListener(new AddVehicleListener());
+		view.startButtonListener(new StartButtonListener(model));
+		
 			
 	}
 	
-	public void doTheTask()
+	class AddVehicleListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			new Thread() { 
+				public void run() {
+				// time-consuming code to run here
+					addVehicles();
+					// Update the user interface components here
+					SwingUtilities.invokeLater(new Runnable() 
+					{ 
+						public void run() {
+					        
+					                                          }
+					});
+					
+				}
+				}.start();
+				model.notifyObservers();
+			// TODO Auto-generated method stub
+			        }		 
+	}
+	
+	class StartButtonListener implements ActionListener {
+			
+		private GUIModel model;
+				
+		public StartButtonListener(GUIModel model) {
+			this.model = model;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			new Thread() { 
+				public void run() {
+				// time-consuming code to run here
+					executeSimulation();
+					// Update the user interface components here
+					SwingUtilities.invokeLater(new Runnable() 
+					{ 
+						public void run() {}
+					});
+				}
+				}.start();		
+				model.notifyObservers();
+			}
+	}		 
+	
+	
+	public void executeSimulation() {
+		VehicleRNG rngVehicle = new VehicleRNG(helper, phaseList, model);
+		rngVehicle.start();
+		JunctionController controller = new JunctionController(phaseList, helper, model);
+		controller.start();
+		while (true) {
+			view.setEmissionField(Float.toString(model.getTotalEmissions()));
+		}
+	}
+	
+	public void addVehicles()
 	{
 				try {
 	            	String pNEntry = pNField.getText();
@@ -125,12 +174,11 @@ public class GUIController  {
 	    				throw new InaccurateDataException("The row with " + newVehicleLine.get(0) + "could not be created");
 	    			}           			
 
-	    			totalEmissions += car.getVehicleEmission();
-	    			emissionField.setText(Float.toString(totalEmissions));
+	    			model.addToTotalEmissions(car.getVehicleEmission());
+	    			view.setEmissionField(Float.toString(model.getTotalEmissions()));
 	    			vehicleModel.addRow(newVehicle);            			           			
 	    			pNField.setText("");
 	            	cTField.setText("");
-//	                    	cSField.setText(""); //field is now uneditable so no need to clear it
 	            	vEField.setText("");
 	            	vLField.setText("");
 	            	boolean sortedPhase = helper.findPhase(car, phaseList);
@@ -139,49 +187,11 @@ public class GUIController  {
 					}else {
 						throw new PhaseException(car.getPlateNumber() + " could not be sorted, check the segment and direction for format errors. " + car.getSegment() + ", " + car.getCrossingDirection());
 					}
-					checkCarSegment(car);
+					helper.checkCarSegment(car, model);
 					String segment = car.getSegment();
-
-					if (segment.equals("1")) {
-						String carsAtSegment = Integer.toString(s1counter);
-						String waitingTime = Float.toString(s1WaitingTime);
-						String waitingLength = Float.toString(s1WaitingLength);
-						String avgCrossSegment = Float.toString(s1CrossTime / 2);
-						statsModel.setValueAt(carsAtSegment, 0, 1);
-						statsModel.setValueAt(waitingTime, 0, 2);
-						statsModel.setValueAt(waitingLength, 0, 3);
-						statsModel.setValueAt(avgCrossSegment, 0, 4);
-					}
-					if (segment.equals("2")) {
-						String carsAtSegment = Integer.toString(s2counter);
-						String waitingTime = Float.toString(s2WaitingTime);
-						String waitingLength = Float.toString(s2WaitingLength);
-						String avgCrossSegment = Float.toString(s2CrossTime / 2);
-						statsModel.setValueAt(carsAtSegment, 1, 1);
-						statsModel.setValueAt(waitingTime, 1, 2);
-						statsModel.setValueAt(waitingLength, 1, 3);
-						statsModel.setValueAt(avgCrossSegment, 1, 4);
-					}
-					if (segment.equals("3")) {
-						String carsAtSegment = Integer.toString(s3counter);
-						String waitingTime = Float.toString(s3WaitingTime);
-						String waitingLength = Float.toString(s3WaitingLength);
-						String avgCrossSegment = Float.toString(s3CrossTime / 2);
-						statsModel.setValueAt(carsAtSegment, 2, 1);
-						statsModel.setValueAt(waitingTime, 2, 2);
-						statsModel.setValueAt(waitingLength, 2, 3);
-						statsModel.setValueAt(avgCrossSegment, 2, 4);
-					}
-					if (segment.equals("4")) {
-						String carsAtSegment = Integer.toString(s4counter);
-						String waitingTime = Float.toString(s4WaitingTime);
-						String waitingLength = Float.toString(s4WaitingLength);
-						String avgCrossSegment = Float.toString(s4CrossTime / 2);
-						statsModel.setValueAt(carsAtSegment, 3, 1);
-						statsModel.setValueAt(waitingTime, 3, 2);
-						statsModel.setValueAt(waitingLength, 3, 3);
-						statsModel.setValueAt(avgCrossSegment, 3, 4);
-					}	
+					
+					helper.updateSegmentTable(segment, model);
+					file.writeToFile(car.getPlateNumber() + "has been accepted and added to the Queue");
 	        	}catch(InaccurateDataException ex) {
 	        		JFrame alert = new JFrame();
 					JOptionPane.showMessageDialog(alert, ex);
@@ -195,7 +205,7 @@ public class GUIController  {
 	        		JFrame alert = new JFrame();
 					JOptionPane.showMessageDialog(alert, ex);
 	        	}
-			this.model.notifyObservers();
+			//this.model.notifyObservers();
 	}
 
 	private JScrollPane addVehiclePane(LinkedList<Phases> phaseList, Helper helper, GUIModel model, GUIView view) {
@@ -225,13 +235,16 @@ public class GUIController  {
 							helper.evaluateVehicleFile(listSplitLine, phaseList);
 							//populate VehicleJTable
 							Vehicles car = helper.createVehicle(listSplitLine, phaseList);
+							
 							if (car == null) {
 								throw new InaccurateDataException("The row with " + listSplitLine.get(0) + "could not be created");
 							}
+							file.writeToFile(car.getPlateNumber() + " has been read and added to the Queue");
 							vehicleModel.addRow(splitLine);	
-							totalEmissions += car.getVehicleEmission();
+							model.addToTotalEmissions(car.getVehicleEmission());
 							boolean sortedPhase = helper.findPhase(car, phaseList);
 							if (sortedPhase) {
+								model.addNewVehicle(car.getPlateNumber());
 								//System.out.println(car.getPlateNumber() + " has been added to the appropriate phase");
 							}else {
 								throw new PhaseException(car.getPlateNumber() + " could not be sorted, check the segment and direction for format errors. " + car.getSegment() + ", " + car.getCrossingDirection());
@@ -265,6 +278,7 @@ public class GUIController  {
 			vehicleTable.setAutoCreateRowSorter(true);
 			vehicleTable.setModel(vehicleModel);
 			vehiclePane.getViewport().add(view.getvehicleTable()); 
+			view.setEmissionField(Float.toString(model.getTotalEmissions()));
 			return vehiclePane;
 		}
 		
@@ -282,40 +296,15 @@ public class GUIController  {
 				rowData.add(Float.toString(phase.getPhaseTimer()));
 				phaseModel.addRow(rowData);
 			}
+			
 			phaseTable.setModel(phaseModel);
 			phasePane.getViewport().add(phaseTable);
-			
+			file.writeToFile("Lanes have been read and created");
 			return phasePane;
 		}
 				
 	}
-	
-	private void checkCarSegment(Vehicles car) {
-		synchronized (this) 
-		{	String carSegment = car.getSegment();
-		if (carSegment.equals("1")) {
-			s1counter ++;	
-			s1WaitingTime += car.getCrossingTime();
-			s1WaitingLength += car.getVehicleLength();
-		}
-		if (carSegment.equals("2")) {
-			s2counter ++;
-			s2WaitingTime += car.getCrossingTime();
-			s2WaitingLength += car.getVehicleLength();
-		}
-		if (carSegment.equals("3")) {
-			s3counter ++;
-			s3WaitingTime += car.getCrossingTime();
-			s3WaitingLength += car.getVehicleLength();
-		}
-		if (carSegment.equals("4")) {
-			s4counter ++;
-			s4WaitingTime += car.getCrossingTime();
-			s4WaitingLength += car.getVehicleLength();
-		}}
-	
-	}
-	
+		
 	private JScrollPane addStatsPane(LinkedList<Phases> phaseList, Helper helper, GUIModel model, GUIView view) {
 		statsPane = view.getStatsPane();
 		statsModel = model.getStatsModel();
@@ -326,98 +315,82 @@ public class GUIController  {
 				Phases phase = phaseList.get(i);
 				String segment = phaseSegment[i];
 				if (segment.equals("1")) {
-					s1CrossTime += phase.getPhaseTimer();
+					model.addToS1CrossTime(phase.getPhaseTimer());
 				}
 				if (segment.equals("2")) {
-					s2CrossTime += phase.getPhaseTimer();
+					model.addToS2CrossTime(phase.getPhaseTimer());
 				}
 				if (segment.equals("3")) {
-					s3CrossTime += phase.getPhaseTimer();
+					model.addToS3CrossTime(phase.getPhaseTimer());
 				}
 				if (segment.equals("4")) {
-					s4CrossTime += phase.getPhaseTimer();
+					model.addToS4CrossTime(phase.getPhaseTimer());
 				}
 
 				LinkedList<Vehicles> carsQueue = phase.getLinkedList();
 				for (Vehicles car : carsQueue) {
-					checkCarSegment(car);
+					helper.checkCarSegment(car,model);
 				}
 
 			}
 			for (int i = 1; i < 5; i ++) {
-				Vector<String> rowData = new Vector<String>();
+				ArrayList<String> rowData = new ArrayList<String>();
 				String segment = Integer.toString(i);
 				rowData.add(segment);
 				if (i == 1) {
-					String carsAtSegment = Integer.toString(s1counter);
-					String waitingTime = Float.toString(s1WaitingTime);
-					String waitingLength = Float.toString(s1WaitingLength);
-					String avgCrossSegment = Float.toString(s1CrossTime / 2);
+					String carsAtSegment = Integer.toString(model.getS1counter());
+					String waitingTime = Float.toString(model.getS1WaitingTime());
+					String waitingLength = Float.toString(model.getS1WaitingLength());
+					String avgCrossSegment = Float.toString(model.getS1CrossTime() / 2f);
 					rowData.add(carsAtSegment);
 					rowData.add(waitingTime);
 					rowData.add(waitingLength);
 					rowData.add(avgCrossSegment);
 				}
 				if (i == 2) {
-					String carsAtSegment = Integer.toString(s2counter);
-					String waitingTime = Float.toString(s2WaitingTime);
-					String waitingLength = Float.toString(s2WaitingLength);
-					String avgCrossSegment = Float.toString(s2CrossTime / 2);
+					String carsAtSegment = Integer.toString(model.getS2counter());
+					String waitingTime = Float.toString(model.getS2WaitingTime());
+					String waitingLength = Float.toString(model.getS2WaitingLength());
+					String avgCrossSegment = Float.toString(model.getS2CrossTime() / 2f);
 					rowData.add(carsAtSegment);
 					rowData.add(waitingTime);
 					rowData.add(waitingLength);
 					rowData.add(avgCrossSegment);
 				}
 				if (i == 3) {
-					String carsAtSegment = Integer.toString(s3counter);
-					String waitingTime = Float.toString(s3WaitingTime);
-					String waitingLength = Float.toString(s3WaitingLength);
-					String avgCrossSegment = Float.toString(s3CrossTime / 2);
+					String carsAtSegment = Integer.toString(model.getS3counter());
+					String waitingTime = Float.toString(model.getS3WaitingTime());
+					String waitingLength = Float.toString(model.getS3WaitingLength());
+					String avgCrossSegment = Float.toString(model.getS3CrossTime() / 2f);
 					rowData.add(carsAtSegment);
 					rowData.add(waitingTime);
 					rowData.add(waitingLength);
 					rowData.add(avgCrossSegment);
 				}
 				if (i == 4) {
-					String carsAtSegment = Integer.toString(s4counter);
-					String waitingTime = Float.toString(s4WaitingTime);
-					String waitingLength = Float.toString(s4WaitingLength);
-					String avgCrossSegment = Float.toString(s4CrossTime / 2);
+					String carsAtSegment = Integer.toString(model.getS4counter());
+					String waitingTime = Float.toString(model.getS4WaitingTime());
+					String waitingLength = Float.toString(model.getS4WaitingLength());
+					String avgCrossSegment = Float.toString(model.getS4CrossTime() / 2f);
 					rowData.add(carsAtSegment);
 					rowData.add(waitingTime);
 					rowData.add(waitingLength);
 					rowData.add(avgCrossSegment);
-				}	
-				statsModel.addRow(rowData);			
+				}
+				model.updateModel(statsModel,rowData.toArray());
+						
 			}
 			statsTable.setModel(statsModel);
 			statsPane.getViewport().add(statsTable);
-			
+			file.writeToFile("Initial Segments calculated Statistics.");
 			return statsPane;		
 		}
 		
 	}
 	
-	class AddVehicleListener implements ActionListener {
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			
-			new Thread() { 
-				public void run() {
-				// time-consuming code to run here
-					doTheTask();
-					// Update the user interface components here
-					SwingUtilities.invokeLater(new Runnable() 
-					{ 
-						public void run() {
-					        
-					                                          }
-					});
-					
-				}
-				}.start();
-			        }		 
-	}
+
+
+	
 
 }
