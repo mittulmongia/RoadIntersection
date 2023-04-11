@@ -25,3 +25,13 @@
 /Strategy.class
 /Subject.class
 /Vehicles.class
+/GenerateCrossingDirection.class
+/GenerateCrossingTime.class
+/GenerateEmissions.class
+/GenerateVehicleLength.class
+/GenerateVehicleSegment.class
+/GenerateVehicleType.class
+/GeneratingStrategy.class
+/RandomNumber.class
+/TrafficController$TrafficState.class
+/TrafficController.class

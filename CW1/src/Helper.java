@@ -1,12 +1,16 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Helper {
 	
+	private GeneratingStrategy strategy;
+
 	
 	public boolean checkNull(String text) {
 		if(text.trim().length() ==0) {
@@ -38,7 +42,7 @@ public class Helper {
 		return false;
 	}	
 	
-	public void evaluateVehicleFile(List<String> vehicleLine, LinkedList<Phases> phaseList) throws InaccurateDataException, DuplicateIDException, NumberFormatException
+	public synchronized void evaluateVehicleFile(List<String> vehicleLine, LinkedList<Phases> phaseList) throws InaccurateDataException, DuplicateIDException, NumberFormatException
 	{
 		String plateNumber = vehicleLine.get(0);
 		String vehicleType = vehicleLine.get(1);
@@ -89,7 +93,125 @@ public class Helper {
 		}
 	}
 	
-	public Scanner readCsvFile(String filename) {
+	public synchronized void checkCarSegment(Vehicles car, GUIModel model) {
+		synchronized (this) 
+		{	String carSegment = car.getSegment();
+		if (carSegment.equals("1")) {
+			model.addToS1counter(1);
+			model.addToS1WaitingLength(car.getVehicleLength());
+			model.addToS1WaitingTime(car.getCrossingTime());
+		}
+		if (carSegment.equals("2")) {
+			model.addToS2counter(1);
+			model.addToS2WaitingLength(car.getVehicleLength());
+			model.addToS2WaitingTime(car.getCrossingTime());
+		}
+		if (carSegment.equals("3")) {
+			model.addToS3counter(1);
+			model.addToS3WaitingLength(car.getVehicleLength());
+			model.addToS3WaitingTime(car.getCrossingTime());
+		}
+		if (carSegment.equals("4")) {
+			model.addToS4counter(1);
+			model.addToS4WaitingLength(car.getVehicleLength());
+			model.addToS4WaitingTime(car.getCrossingTime());
+		}}
+	
+	}
+	
+	public synchronized void updateSegmentTable(String segment, GUIModel model) {
+		if (segment.equals("1")) {
+			String carsAtSegment = Integer.toString(model.getS1counter());
+			String waitingTime = Float.toString(model.getS1WaitingTime());
+			String waitingLength = Float.toString(model.getS1WaitingLength());
+			String avgCrossSegment = Float.toString(model.getS1CrossTime() / 2f);
+			model.updateTableModel(model.getStatsModel(),0,1, carsAtSegment);
+			model.updateTableModel(model.getStatsModel(),0,2, waitingTime);
+			model.updateTableModel(model.getStatsModel(),0,3, waitingLength);
+			model.updateTableModel(model.getStatsModel(),0,4, avgCrossSegment);
+		}
+		if (segment.equals("2")) {
+			String carsAtSegment = Integer.toString(model.getS2counter());
+			String waitingTime = Float.toString(model.getS2WaitingTime());
+			String waitingLength = Float.toString(model.getS2WaitingLength());
+			String avgCrossSegment = Float.toString(model.getS2CrossTime() / 2f);
+			model.updateTableModel(model.getStatsModel(),1,1, carsAtSegment);
+			model.updateTableModel(model.getStatsModel(),1,2, waitingTime);
+			model.updateTableModel(model.getStatsModel(),1,3, waitingLength);
+			model.updateTableModel(model.getStatsModel(),1,4, avgCrossSegment);
+		}
+		if (segment.equals("3")) {
+			String carsAtSegment = Integer.toString(model.getS3counter());
+			String waitingTime = Float.toString(model.getS3WaitingTime());
+			String waitingLength = Float.toString(model.getS3WaitingLength());
+			String avgCrossSegment = Float.toString(model.getS3CrossTime() / 2f);
+			model.updateTableModel(model.getStatsModel(),2,1, carsAtSegment);
+			model.updateTableModel(model.getStatsModel(),2,2, waitingTime);
+			model.updateTableModel(model.getStatsModel(),2,3, waitingLength);
+			model.updateTableModel(model.getStatsModel(),2,4, avgCrossSegment);
+		}
+		if (segment.equals("4")) {
+			String carsAtSegment = Integer.toString(model.getS4counter());
+			String waitingTime = Float.toString(model.getS4WaitingTime());
+			String waitingLength = Float.toString(model.getS4WaitingLength());
+			String avgCrossSegment = Float.toString(model.getS4CrossTime() / 2f);
+			model.updateTableModel(model.getStatsModel(),3,1, carsAtSegment);
+			model.updateTableModel(model.getStatsModel(),3,2, waitingTime);
+			model.updateTableModel(model.getStatsModel(),3,3, waitingLength);
+			model.updateTableModel(model.getStatsModel(),3,4, avgCrossSegment);
+		}	
+	}
+	
+	public synchronized void updateSegmentTable(GUIModel model) {
+		for (int i = 1; i < 5; i ++) {
+			ArrayList<String> rowData = new ArrayList<String>();
+			String segment = Integer.toString(i);
+			rowData.add(segment);
+			if (i == 1) {
+				String carsAtSegment = Integer.toString(model.getS1counter());
+				String waitingTime = Float.toString(model.getS1WaitingTime());
+				String waitingLength = Float.toString(model.getS1WaitingLength());
+				String avgCrossSegment = Float.toString(model.getS1CrossTime() / 2f);
+				rowData.add(carsAtSegment);
+				rowData.add(waitingTime);
+				rowData.add(waitingLength);
+				rowData.add(avgCrossSegment);
+			}
+			if (i == 2) {
+				String carsAtSegment = Integer.toString(model.getS2counter());
+				String waitingTime = Float.toString(model.getS2WaitingTime());
+				String waitingLength = Float.toString(model.getS2WaitingLength());
+				String avgCrossSegment = Float.toString(model.getS2CrossTime() / 2f);
+				rowData.add(carsAtSegment);
+				rowData.add(waitingTime);
+				rowData.add(waitingLength);
+				rowData.add(avgCrossSegment);
+			}
+			if (i == 3) {
+				String carsAtSegment = Integer.toString(model.getS3counter());
+				String waitingTime = Float.toString(model.getS3WaitingTime());
+				String waitingLength = Float.toString(model.getS3WaitingLength());
+				String avgCrossSegment = Float.toString(model.getS3CrossTime() / 2f);
+				rowData.add(carsAtSegment);
+				rowData.add(waitingTime);
+				rowData.add(waitingLength);
+				rowData.add(avgCrossSegment);
+			}
+			if (i == 4) {
+				String carsAtSegment = Integer.toString(model.getS4counter());
+				String waitingTime = Float.toString(model.getS4WaitingTime());
+				String waitingLength = Float.toString(model.getS4WaitingLength());
+				String avgCrossSegment = Float.toString(model.getS4CrossTime() / 2f);
+				rowData.add(carsAtSegment);
+				rowData.add(waitingTime);
+				rowData.add(waitingLength);
+				rowData.add(avgCrossSegment);
+			}
+			model.updateModel(model.getStatsModel(),rowData.toArray());
+		}
+	}
+	
+	public synchronized Scanner readCsvFile(String filename) {
 		try {
 			Scanner csvScanner = new Scanner(new File(filename));
 			csvScanner.useDelimiter(",");
@@ -99,7 +221,9 @@ public class Helper {
 			System.out.println("The file you've selected does not exist in the src directory.");
 			return null;
 		}
-	}public boolean findPhase(Vehicles car, LinkedList<Phases> listOfPhases) {
+	}
+	
+	public synchronized boolean findPhase(Vehicles car, LinkedList<Phases> listOfPhases) {
 		String direction = car.getCrossingDirection();
 		String segment = car.getSegment();
 		if (((direction.equals("straight")) || (direction.equals("right"))) && (segment.equals("1"))) {
@@ -137,10 +261,9 @@ public class Helper {
 		else {
 			return false;
 		}
-		
 	}
 	
-	public Vehicles createVehicle(List<String> csvFileLine, LinkedList<Phases> phaseList) {
+	public synchronized Vehicles createVehicle(List<String> csvFileLine, LinkedList<Phases> phaseList) {
 		//Extract variables from csv File
 		String plateNumber = csvFileLine.get(0);
 		String vehicleType = csvFileLine.get(1);
@@ -166,19 +289,21 @@ public class Helper {
 		return car;
 	}
 	
-	public Phases createPhase(List<String> csvFileLine) {
+	public synchronized Phases createPhase(List<String> csvFileLine) {
 		//Extract variables from csv File
 		String phaseName = csvFileLine.get(0);
 		float phaseTimer = Float.parseFloat(csvFileLine.get(1));					
 		Phases phase = new Phases();
+		TrafficController controller = new TrafficController();
 		phase.setPhaseName(phaseName);
 		phase.setPhaseTimer(phaseTimer);
 		phase.setLinkedList();
 		phase.setCrossedLinkedList();
+		phase.setTrafficController(controller);
 		return phase;	
 	}
 	
-	public LinkedList<Phases> readPhasesFile(String filename) {
+	public synchronized LinkedList<Phases> readPhasesFile(String filename) {
 		if(filename == null || filename == "" )
 		{
 			throw new NullPointerException();
@@ -210,6 +335,104 @@ public class Helper {
 		
 		 }
 	}
+	
+	public synchronized ArrayList<String> randomlyGenerateVehicles(){
+		ArrayList<String> vehicleDetails = new ArrayList<String>();
+		
+		String plateNumber = generatePlateNumber();
+		String vehicleType = generateVehicleType();
+		String crossingTime = generateCrossingTime();
+		String direction = generateCrossingDirection();
+		String crossingStatus = generateCrossingStatus();
+		String emissionRate = generateEmissions();
+		String vehicleLength = generateVehicleLength();
+		String segment = generateVehicleSegment();
+		
+		vehicleDetails.add(plateNumber);
+		vehicleDetails.add(vehicleType);
+		vehicleDetails.add(crossingTime);
+		vehicleDetails.add(direction);
+		vehicleDetails.add(crossingStatus);
+		vehicleDetails.add(emissionRate);
+		vehicleDetails.add(vehicleLength);
+		vehicleDetails.add(segment);
+		
+		return vehicleDetails;
+	}
+	
+	private synchronized String generatePlateNumber() {
+		Random random = new Random();
+		int aMax = 90;
+		int aMin = 65;
+		
+		String plateOpening = "";
+		String plateNumerals = "";
+		String plateEnding = "";
+		for (int i= 0; i < 3; i++) {
+			int genLetter = random.nextInt((aMax - aMin) + 1) + aMin;
+			plateOpening += (char) genLetter;
+		}
+		for (int i= 0; i < 3; i++) {
+			int genNumber = random.nextInt(10);
+			plateNumerals += String.valueOf(genNumber);
+		}
+		for (int i= 0; i < 3; i++) {
+			int genLetter = random.nextInt((aMax - aMin) + 1) + aMin;
+			plateEnding += (char) genLetter;
+		}
+		String plateNumber = plateOpening + plateNumerals + plateEnding;
+		return plateNumber;
+	}
+	
+	private Random generateRandomSeed() {
+		Random random = new Random();
+//		random.setSeed(seed);
+		return random;
+	}
+	
+	private String generateVehicleType() {
+		GenerateVehicleType genVehType = new GenerateVehicleType();
+		this.strategy = (GeneratingStrategy) genVehType;
+		return strategy.GenerateObject();
+	}
+	
+	private String generateCrossingDirection() {
+		GenerateCrossingDirection genCrossingDirection = new GenerateCrossingDirection();
+		this.strategy = (GeneratingStrategy) genCrossingDirection;
+		return strategy.GenerateObject();
+	}
+	
+	private String generateCrossingTime() {
+		GenerateCrossingTime genCrossingTime = new GenerateCrossingTime();
+		this.strategy = (GeneratingStrategy) genCrossingTime;
+		return strategy.GenerateObject();
+		
+	}
+	
+	private String generateCrossingStatus() {
+		String crossingStatus = "not crossed";
+		return crossingStatus;
+	}
+	
+	private String generateEmissions() {
+		GenerateEmissions genEmission = new GenerateEmissions();
+		this.strategy = (GeneratingStrategy) genEmission;
+		return strategy.GenerateObject();
+	}
+	
+	private String generateVehicleLength() {
+		GenerateVehicleLength genVehicleLength = new GenerateVehicleLength();
+		this.strategy = (GeneratingStrategy) genVehicleLength;
+		return strategy.GenerateObject();
+	}
+	
+	private String generateVehicleSegment() {
+		GenerateVehicleSegment genVehicleSegment = new GenerateVehicleSegment();
+		this.strategy = (GeneratingStrategy) genVehicleSegment;
+		return strategy.GenerateObject();
+	}
+	
+	
 	
 	
 	
